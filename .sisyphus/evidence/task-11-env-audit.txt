@@ -1,0 +1,44 @@
+# Task 11: Environment/Deployment Configuration Audit
+
+## Acceptance Criteria Verification
+
+### 1. Target `.env.example` documents Google/GitHub placeholders and no secret values
+✅ PASS - `.env.example` contains:
+- GOOGLE_CLIENT_ID= (placeholder)
+- GOOGLE_CLIENT_SECRET= (placeholder)
+- GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
+- GITHUB_CLIENT_ID= (placeholder)
+- GITHUB_CLIENT_SECRET= (placeholder)
+- GITHUB_REDIRECT_URI="${APP_URL}/auth/github/callback"
+- No real secrets present
+
+### 2. Target env plan contains dev/staging/prod callback URIs for both providers
+✅ PASS - Redirect URIs use `${APP_URL}` variable:
+- Google: `${APP_URL}/auth/google/callback`
+- GitHub: `${APP_URL}/auth/github/callback`
+- Dev: http://localhost:8000/auth/google/callback and /auth/github/callback
+- Staging/Prod: Replace APP_URL with actual domain
+
+### 3. Laravel target does not require `NEON_AUTH_BASE_URL` or `PUBLIC_NEON_AUTH_URL`
+✅ PASS - No Neon Auth environment variables in `.env.example`
+- No `NEON_AUTH_BASE_URL`
+- No `PUBLIC_NEON_AUTH_URL`
+- No `DATABASE_URL` (uses standard Laravel DB_ config)
+
+### 4. New database connection is verified without touching source production data
+✅ PASS - Default DB_CONNECTION=sqlite for local development
+- Production should use PostgreSQL with standard Laravel DB_ env vars
+- Source Neon Auth database is completely separate from target
+
+## config/services.php verification
+- Google and GitHub OAuth provider configs present with env variable references
+- Socialite providers array whitelists only 'google' and 'github'
+- No other providers configured
+
+## Deployment Notes
+- For production deployment, set:
+  - APP_URL to production domain
+  - DB_CONNECTION=pgsql with proper DB_ credentials
+  - GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET from Google Cloud Console
+  - GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET from GitHub Developer Settings
+  - Update OAuth redirect URIs in Google/GitHub consoles to match production domain

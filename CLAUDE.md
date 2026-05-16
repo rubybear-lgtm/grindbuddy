@@ -33,9 +33,12 @@ Engineers at any level (student through senior) practicing LeetCode for technica
 **Sharp · Focused · Relentless.** Terse, direct, earned. No hype, no hand-holding. Copy should feel like it was written by someone who's been through the process. Emotional goal: the user feels *in control* and *clear-headed* — Grind Buddy removes decision fatigue and tells you what to practice today.
 
 ### Aesthetic Direction
-Dark-first. Keep the existing visual style:
+Dark-first, but light mode is a **full first-class experience** — not a palette swap. Both themes must be verified when adding new UI.
+
+Keep the existing visual style:
 - Near-black backgrounds, high contrast, Allium green-teal primary (`oklch(0.85 0.18 165)`)
 - Brand cyan (`oklch(0.75 0.15 190)`) as secondary accent
+- Brand purple (`oklch(0.65 0.2 300)`) defined but exploratory — no established role yet
 - Outfit (bold, uppercase, tight) for headings; Inter for body; JetBrains Mono for data/code
 - Bento grids, glassmorphism panels, subtle shimmer and pulse animations
 - Geometry over illustrations. Motion serves state, not decoration.
@@ -46,5 +49,5 @@ Anti-references: generic SaaS gradients, enterprise gray dashboards, gamified/Du
 1. **Copy names the thing.** Say what the feature does — not what it metaphorically resembles. "Due for review" not "Priority Recall Stream."
 2. **Visual boldness, verbal restraint.** Heavy type and motion welcome. Copy: fewer words, more impact.
 3. **Respect the user's intelligence.** Write for engineers who know LeetCode. No patronizing explanations.
-4. **Dark mode is canonical.** Optimize for dark; light mode is a natural extension.
+4. **Both themes are first-class.** Dark mode is canonical, but light mode is not an afterthought. Check new UI in both. The same character must read through in both.
 5. **Function first, then delight.** If an animation doesn't communicate state or guide attention, remove it.

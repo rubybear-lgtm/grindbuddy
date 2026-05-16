@@ -1,0 +1,1 @@
+- Need to verify whether endpoint auth should stay proxy-level or move into route guards during migration.

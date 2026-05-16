@@ -1,0 +1,3 @@
+- Treat /login, /register, /, /api/auth*, /api/health, /favicon.ico, and /robots.txt as public based on layout gating.
+- Preserve the root-page form actions for log CRUD because they back shared modals even though the home page is public.
+- Skill match API should be mirrored as SkillMatchPayload with company/user/patterns/recommendations.

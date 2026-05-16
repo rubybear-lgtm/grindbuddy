@@ -1,0 +1,14 @@
+TASK 1: LOGS EXCLUSION GUARDRAIL VERIFICATION
+
+Status: PASS
+
+Evidence:
+- Source `logs` table defined in `src/lib/server/db/schema.ts:126-135` — NOT in migrate scope
+- Plan explicitly excludes legacy `logs` migration (Section: "Must NOT Have", line 89)
+- Target Laravel `Log` model only for new post-cutover user activity (Task 5, line 297)
+- Import command `grind:import-catalog` imports only `problems`, `companies`, `company_problems` (Task 6, line 337)
+- Zero legacy log rows expected in target after import (Task 6 acceptance criteria, line 356)
+
+All `logs` references in the plan are exclusionary: excluded from data migration,
+only scaffolded as empty table for fresh users, and verified at smoke test time.
+No import implementation for legacy logs is requested.

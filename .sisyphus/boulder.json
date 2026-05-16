@@ -1,0 +1,97 @@
+{
+  "active_plan": "/Users/ruby/Documents/dev/railway/grind-buddy/.sisyphus/plans/svelte-neon-to-laravel-socialite.md",
+  "started_at": "2026-05-16T01:22:33.210Z",
+  "session_ids": [
+    "ses_1d1abe6e7ffeLjuD760GBKF5Ne",
+    "ses_1d19d9c4effeST2x46HtX48YAZ",
+    "ses_1d19d3a1cffe4irlksDpiwQDPB",
+    "ses_1d1345759ffeWB6Ec4kzuoevca",
+    "ses_1d1344698ffekSZktjUqqw7Z6D",
+    "ses_1d1343825ffemRFiAUTtHJy0SZ",
+    "ses_1d13420d1ffea3QMjvzUBhK3zN"
+  ],
+  "session_origins": {
+    "ses_1d1abe6e7ffeLjuD760GBKF5Ne": "direct",
+    "ses_1d19d9c4effeST2x46HtX48YAZ": "appended",
+    "ses_1d19d3a1cffe4irlksDpiwQDPB": "appended",
+    "ses_1d1345759ffeWB6Ec4kzuoevca": "appended",
+    "ses_1d1344698ffekSZktjUqqw7Z6D": "appended",
+    "ses_1d1343825ffemRFiAUTtHJy0SZ": "appended",
+    "ses_1d13420d1ffea3QMjvzUBhK3zN": "appended"
+  },
+  "plan_name": "svelte-neon-to-laravel-socialite",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Freeze Source/Target Inventory and Route Parity Table",
+      "session_id": "ses_1d19d3a1cffe4irlksDpiwQDPB",
+      "agent": "explore",
+      "updated_at": "2026-05-16T01:27:19.962Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "Design OAuth-Only Identity Schema with TDD",
+      "session_id": "ses_1d198579cffemfSVGdkXs1Qtyy",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-16T01:34:35.086Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "Implement Socialite Google/GitHub Auth with TDD",
+      "session_id": "ses_1d190ce21ffe8XUbmNRKd6cLFI",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-16T01:44:45.224Z"
+    },
+    "todo:6": {
+      "task_key": "todo:6",
+      "task_label": "6",
+      "task_title": "Build Idempotent Public Catalog Import Command with TDD",
+      "session_id": "ses_1d189f218ffeBthGUTJVtUbhQa",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-16T01:54:09.968Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "Recreate Catalog, Log, and Server Routes with TDD",
+      "session_id": "ses_1d151af53ffeQWQz0noHhdc1ua",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-16T02:50:14.276Z"
+    },
+    "todo:9": {
+      "task_key": "todo:9",
+      "task_label": "9",
+      "task_title": "Port Dashboard, Catalog, Analytics, and Fresh-Log User Flows",
+      "session_id": "ses_1d14a2ed8ffeGrOnFrkGjkJr9R",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-05-16T03:08:37.122Z"
+    },
+    "todo:10": {
+      "task_key": "todo:10",
+      "task_label": "10",
+      "task_title": "Harden Test, Type, Build, and CI Gates",
+      "session_id": "ses_1d13cdc10ffefRJ6Mk70H3kSVK",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-05-16T03:14:32.193Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "Plan Compliance Audit — oracle",
+      "session_id": "ses_1d0e3899affeD6nUnqk22uuaso",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-05-16T04:53:36.302Z"
+    }
+  }
+}

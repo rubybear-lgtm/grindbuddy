@@ -1,0 +1,13 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - navigation [ref=e5]:
+        - link "Log in" [ref=e6] [cursor=pointer]:
+          - /url: /login
+    - main [ref=e8]:
+      - generic [ref=e9]:
+        - heading "GrindBuddy" [level=1] [ref=e10]
+        - paragraph [ref=e11]: Your personal companion for the daily grind.
+        - link "Get Started" [ref=e13] [cursor=pointer]:
+          - /url: /login
+  - region "Notifications alt+T"
