@@ -38,7 +38,7 @@
 		});
 
 		// Calculate percentage for ALL patterns (including 0% for unattempted)
-		const mastery: Record<Pattern, number> = {};
+		const mastery = {} as Record<Pattern, number>;
 		totalAvailable.forEach((total, pattern) => {
 			const attempted = attemptedCount.get(pattern) || 0;
 			const percentage = total > 0 ? Math.round((attempted / total) * 100) : 0;

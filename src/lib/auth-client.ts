@@ -26,23 +26,23 @@ export function getAuthClient(): VanillaBetterAuthClient {
 }
 
 // Convenience exports for auth operations
-export const signIn = (...args: Parameters<VanillaBetterAuthClient['signIn']>) => {
-	return getAuthClient().signIn(...args);
+export const signIn = (...args: any[]) => {
+	return (getAuthClient() as any).signIn(...args);
 };
 
-export const signUp = (...args: Parameters<VanillaBetterAuthClient['signUp']>) => {
-	return getAuthClient().signUp(...args);
+export const signUp = (...args: any[]) => {
+	return (getAuthClient() as any).signUp(...args);
 };
 
-export const signOut = (...args: Parameters<VanillaBetterAuthClient['signOut']>) => {
-	return getAuthClient().signOut(...args);
+export const signOut = (...args: any[]) => {
+	return (getAuthClient() as any).signOut(...args);
 };
 
 // Get session synchronously (for compatibility)
 export const getSession = () => {
 	if (!browser) return null;
 	try {
-		return getAuthClient().getSession?.() || null;
+		return (getAuthClient() as any).getSession?.() || null;
 	} catch {
 		return null;
 	}

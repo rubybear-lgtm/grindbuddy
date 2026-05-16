@@ -59,20 +59,17 @@
 		return { type: 'doughnut', data, options } satisfies ChartConfiguration;
 	});
 
-	// Create and update chart reactively
 	$effect(() => {
 		if (!browser || !canvasEl) return;
 
-		// Create chart if it doesn't exist
-		if (!chart) {
-			chart = new ChartJS(canvasEl, chartConfig);
-		} else {
-			// Update existing chart with new data
-			chart.data = chartConfig.data;
-			chart.update();
+		if (chart) {
+			chart.destroy();
+			chart = null;
 		}
 
-		// Cleanup on unmount
+		const configCopy = JSON.parse(JSON.stringify(chartConfig));
+		chart = new ChartJS(canvasEl, configCopy);
+
 		return () => {
 			chart?.destroy();
 			chart = null;

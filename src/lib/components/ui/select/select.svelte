@@ -7,6 +7,6 @@
 	}: SelectPrimitive.RootProps = $props();
 </script>
 
-<SelectPrimitive.Root bind:value bind:open {...restProps}>
+<SelectPrimitive.Root bind:value={value as any} bind:open {...restProps}>
 	{@render restProps.children?.()}
 </SelectPrimitive.Root>
