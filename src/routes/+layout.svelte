@@ -6,20 +6,19 @@
 	import MobileNav from '$lib/components/nav/MobileNav.svelte';
 	import ProblemSearchModal from '$lib/components/modals/ProblemSearchModal.svelte';
 	import LogDetailsModal from '$lib/components/modals/LogDetailsModal.svelte';
-	import { logsStore, closeSearchModal, closeLogModal, closeDetailsModal, initializeStores, updateLogs } from '$lib/stores/logsStore';
+	import { logsStore, closeSearchModal, closeLogModal, closeDetailsModal, initializeStores } from '$lib/stores/logsStore';
 	import ProblemDetailsModal from '$lib/components/modals/ProblemDetailsModal.svelte';
-	import { onMount } from 'svelte';
 	import ModeToggle from '$lib/components/ModeToggle.svelte';
 
 	let { data, children } = $props();
-	
-	let initialized = $state(false);
-	
-	// Initialize stores only once on mount
-	$effect(() => {
-		if (!initialized && data.problems && data.logs) {
-			initializeStores({ problems: data.problems, logs: data.logs });
-			initialized = true;
+
+	// Initialize stores before DOM updates so child components render with data
+	$effect.pre(() => {
+		if (data.problems && data.logs) {
+			initializeStores({
+				problems: data.problems as any,
+				logs: data.logs as any
+			});
 		}
 	});
 
@@ -49,7 +48,7 @@
 			</div>
 		{/if}
 
-		<main class={isAuthRoute ? 'py-12' : isHome ? '' : 'pt-16 pb-16 md:pb-0'}>
+		<main class={isAuthRoute ? 'py-12' : isHome ? '' : 'pt-24 pb-16 md:pb-0'}>
 			{@render children()}
 		</main>
 	</div>

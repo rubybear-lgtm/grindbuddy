@@ -20,22 +20,22 @@ export function getAuthClient(neonAuthUrl: string, cookies?: Cookies): AuthClien
 						value: cookie.value
 					}));
 				},
-				setAll(cookiesToSet) {
+				setAll(cookiesToSet: any[]) {
 					cookiesToSet.forEach(({ name, value, options }) => {
 						cookies.set(name, value, { path: '/', ...options });
 					});
 				}
 			}
-		});
+		} as any);
 	}
 
 	// Fallback: create client without cookie handling (for cases where cookies aren't available)
-	return createAuthClient(neonAuthUrl);
+	return createAuthClient(neonAuthUrl) as any;
 }
 
 // Helper function that creates an auth client using the env var directly
 // Use this when you have access to event.cookies (form actions, hooks, etc.)
-export function createAuth(cookies: Cookies): AuthClient {
+export function createAuth(cookies: Cookies): any {
 	const neonAuthUrl = env.NEON_AUTH_BASE_URL;
 	if (!neonAuthUrl) {
 		throw new Error('NEON_AUTH_BASE_URL environment variable is not set');

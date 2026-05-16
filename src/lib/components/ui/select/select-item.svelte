@@ -20,7 +20,7 @@
 	)}
 	{...restProps}
 >
-	{#snippet children({ selected }: { selected: boolean })}
+	{#snippet children({ selected, highlighted }: { selected: boolean; highlighted: boolean })}
 		<span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
 			{#if selected}
 				<Check class="h-4 w-4" />
@@ -28,7 +28,7 @@
 		</span>
 
 		{#if typeof childrenProp === 'function'}
-			{@render childrenProp()}
+			{@render childrenProp({ selected, highlighted })}
 		{:else}
 			{label || value}
 		{/if}

@@ -24,28 +24,28 @@
 </script>
 
 <nav
-	class="fixed top-0 left-0 right-0 z-40 h-16 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800"
+	class="fixed top-0 left-0 right-0 z-40 h-20 bg-background/60 backdrop-blur-xl border-b border-border"
 >
-	<div class="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
-		<div class="flex h-16 items-center justify-between gap-2">
+	<div class="mx-auto max-w-7xl px-8">
+		<div class="flex h-20 items-center justify-between">
 			<!-- Logo and nav links -->
-			<div class="flex items-center gap-4 sm:gap-8 min-w-0 flex-shrink">
-				<a
-					href={user ? '/dashboard' : '/'}
-					class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-50 whitespace-nowrap"
-				>
-					GrindBuddy
+			<div class="flex items-center gap-12">
+				<a href="/" class="group flex items-center gap-4 font-heading text-2xl font-black tracking-tightest transition-all hover:opacity-90">
+					<div class="relative flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[0_0_20px_oklch(var(--primary)/0.4)]">
+						<Plus aria-hidden="true" class="h-6 w-6 fill-current" />
+					</div>
+					<span class="tracking-tightest text-foreground">GRIND<span class="text-primary">BUDDY</span></span>
 				</a>
-				<div class="hidden md:flex items-center gap-4 lg:gap-6">
+				<div class="hidden md:flex items-center gap-10">
 					{#each navItems as item (item.path)}
 						<a
 							href={item.path}
-							class="flex items-center gap-2 px-2 lg:px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap {page
+							class="flex items-center gap-2 py-2 text-[10px] font-black uppercase tracking-[0.25em] transition-all {page
 								.url.pathname === item.path
-								? 'text-indigo-600 dark:text-indigo-400'
-								: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50'}"
+								? 'text-primary'
+								: 'text-muted-foreground hover:text-foreground'}"
 						>
-							<item.icon class="h-5 w-5" />
+							<item.icon class="h-4 w-4" />
 							{item.label}
 						</a>
 					{/each}
@@ -54,41 +54,34 @@
 
 			<!-- Right side: User avatar and Log Problem button -->
 			{#if user}
-				<div class="flex items-center gap-1.5 sm:gap-2 lg:gap-3 flex-shrink-0">
+				<div class="flex items-center gap-8">
 					<ModeToggle />
-					<div class="hidden md:block">
-						<Button onclick={openSearchModal} variant="primary" size="sm">
-							<Plus class="mr-1.5 sm:mr-2 h-4 w-4" />
-							<span class="hidden lg:inline">Log Problem</span>
-						</Button>
-					</div>
-					<div
-						class="flex items-center gap-1.5 sm:gap-2 rounded-full bg-slate-100 dark:bg-slate-800 px-1.5 sm:px-2 py-1.5 text-sm text-slate-700 dark:text-slate-200"
-					>
-						<div
-							class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-50 flex-shrink-0"
-						>
+					<Button onclick={openSearchModal} class="!rounded-md px-6 py-2.5 !text-[10px] !font-black tracking-[0.2em] bg-primary text-primary-foreground shadow-[0_0_20px_oklch(var(--primary)/0.3)] border-none">
+						Log problem
+					</Button>
+					<div class="flex items-center gap-4 px-3 py-1.5 text-sm">
+						<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-muted border border-border text-foreground font-black shadow-inner">
 							{#if user?.name}{user.name.slice(0, 1)}{:else}<User class="h-4 w-4" />{/if}
 						</div>
-						<span class="hidden xl:inline">{user.name}</span>
-						<Button onclick={handleLogout} variant="ghost" size="sm" class="px-2 sm:px-3">Logout</Button>
+						<span class="hidden lg:inline text-[10px] font-black text-muted-foreground uppercase tracking-widest">{user.name}</span>
+						<Button onclick={handleLogout} variant="ghost" class="!px-2 !text-[9px] !font-black tracking-widest border border-border hover:bg-muted text-muted-foreground hover:text-primary transition-all">Log out</Button>
 					</div>
 				</div>
 			{:else}
-				<div class="flex items-center gap-3">
+				<div class="flex items-center gap-6">
 					<ModeToggle />
 					<a
 						href="/login"
-						class="text-sm font-medium text-slate-700 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-300"
+						class="text-xs font-black text-foreground hover:text-primary transition-all tracking-[0.1em]"
 					>
 						Log in
 					</a>
-					<a
-						href="/register"
-						class="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-300"
+					<Button
+						onclick={() => window.location.href = '/register'}
+						class="!rounded-md px-8 py-3 !text-[10px] !font-black tracking-[0.2em] shadow-[0_0_30px_oklch(var(--primary)/0.3)] border-none"
 					>
-						Register
-					</a>
+						Sign up free
+					</Button>
 				</div>
 			{/if}
 		</div>

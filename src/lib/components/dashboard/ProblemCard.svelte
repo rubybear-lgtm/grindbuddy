@@ -1,117 +1,95 @@
 <script lang="ts">
-	import Card from '$lib/components/ui/Card.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import DifficultyBadge from '$lib/components/ui/DifficultyBadge.svelte';
-	import PatternBadge from '$lib/components/ui/PatternBadge.svelte';
 	import StatusBadge from '$lib/components/ui/StatusBadge.svelte';
-	import HistoryTimeline from '$lib/components/logbook/HistoryTimeline.svelte';
 	import { ExternalLink } from '@lucide/svelte';
-	import type { ProblemWithLogs, Problem } from '$lib/types';
-	import { openDetailsModal, openLogModal } from '$lib/stores/logsStore';
+	import type { ProblemWithLogs } from '$lib/types';
+	import { openLogModal, openDetailsModal } from '$lib/stores/logsStore';
 
-	function formatRelativeTime(date: Date): string {
+	let { problem }: { problem: ProblemWithLogs } = $props();
+
+	function formatRelativeTime(date: Date | string) {
 		const now = new Date();
-		const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+		const logDate = new Date(date);
+		const diffInHours = Math.floor((now.getTime() - logDate.getTime()) / (1000 * 60 * 60));
 
-		if (diffInSeconds < 60) {
-			return 'just now';
-		}
-
-		const diffInMinutes = Math.floor(diffInSeconds / 60);
-		if (diffInMinutes < 60) {
-			return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`;
-		}
-
-		const diffInHours = Math.floor(diffInMinutes / 60);
-		if (diffInHours < 24) {
-			return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
-		}
-
+		if (diffInHours < 1) return 'Just now';
+		if (diffInHours < 24) return `${diffInHours}h ago`;
 		const diffInDays = Math.floor(diffInHours / 24);
-		if (diffInDays < 7) {
-			return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
-		}
-
-		const diffInWeeks = Math.floor(diffInDays / 7);
-		if (diffInWeeks < 4) {
-			return `${diffInWeeks} ${diffInWeeks === 1 ? 'week' : 'weeks'} ago`;
-		}
-
-		const diffInMonths = Math.floor(diffInDays / 30);
-		return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`;
+		return `${diffInDays}d ago`;
 	}
 
-	interface Props {
-		problem: ProblemWithLogs;
-	}
-
-	let { problem }: Props = $props();
+	const isNew = $derived(!problem.lastLog);
 </script>
 
-<Card
-	class="p-0 overflow-hidden transition-all hover:shadow-md cursor-pointer border-l-4 {problem.lastLog
-		? 'border-l-indigo-500'
-		: 'border-l-transparent'}"
+<div
+	class="group relative flex flex-col overflow-hidden rounded-3xl bg-card border border-border p-8 transition-colors hover:border-primary/30 cursor-pointer
+		{isNew ? 'border-l-2 border-l-primary/40' : ''}"
+	onclick={() => openDetailsModal(problem)}
+	role="button"
+	tabindex="0"
+	onkeydown={(e) => e.key === 'Enter' && openDetailsModal(problem)}
 >
-	<div
-		class="p-4 flex flex-col gap-3"
-		onclick={() => openDetailsModal(problem)}
-		role="button"
-		tabindex="0"
-		onkeydown={(e) => e.key === 'Enter' && openDetailsModal(problem)}
-	>
-		<!-- Header: Problem number + title -->
-		<div class="flex justify-between items-start">
-			<h3 class="font-mono text-base font-bold text-slate-900 dark:text-slate-50">
+	<div class="flex flex-col h-full gap-5">
+		<!-- Header -->
+		<div class="flex items-start justify-between gap-3">
+			<span class="text-[10px] font-mono text-primary/50 font-bold uppercase tracking-widest mt-0.5">
 				#{problem.number}
-				{problem.title}
-			</h3>
-			<div class="flex items-center gap-2">
-				<span class="text-xs text-slate-400">View Details</span>
-			</div>
-		</div>
-
-		<!-- Badges: Difficulty and Patterns -->
-		<div class="flex flex-wrap items-center gap-2">
+			</span>
 			<DifficultyBadge difficulty={problem.difficulty} />
-			{#each problem.patterns as pattern (pattern)}
-				<PatternBadge {pattern} />
-			{/each}
 		</div>
 
-		<!-- Footer: Last status and actions -->
-		<div
-			class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 mt-1"
-		>
-			<div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-				{#if problem.lastLog}
-					<span>Last:</span>
-					<StatusBadge status={problem.lastLog.status} showIcon={true} />
-					<span>{formatRelativeTime(problem.lastLog.timestamp)}</span>
-				{:else}
-					<span class="text-slate-400">Never logged</span>
+		<h3 class="text-xl font-black text-foreground tracking-tight leading-tight uppercase group-hover:text-primary transition-colors">
+			{problem.title}
+		</h3>
+
+		<!-- Patterns -->
+		{#if problem.patterns.length > 0}
+			<div class="flex flex-wrap gap-1.5">
+				{#each problem.patterns.slice(0, 3) as pattern (pattern)}
+					<span class="text-[11px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border">
+						{pattern}
+					</span>
+				{/each}
+				{#if problem.patterns.length > 3}
+					<span class="text-[11px] text-muted-foreground/40">+{problem.patterns.length - 3}</span>
 				{/if}
 			</div>
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div
-				class="flex items-center gap-2"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.stopPropagation()}
-				role="group"
-			>
+		{/if}
+
+		<!-- Footer -->
+		<div class="mt-auto pt-5 border-t border-border flex items-center justify-between gap-3">
+			<div class="flex items-center gap-2 min-w-0">
+				{#if problem.lastLog}
+					<StatusBadge status={problem.lastLog.status} />
+					<span class="text-[10px] font-mono text-muted-foreground uppercase tracking-widest tabular truncate">
+						{formatRelativeTime(problem.lastLog.timestamp)}
+					</span>
+				{:else}
+					<span class="text-[10px] font-mono text-primary/40 uppercase tracking-widest">New</span>
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-2 shrink-0">
 				<a
 					href={problem.leetcodeUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50 transition-colors"
-					aria-label="Open problem on LeetCode"
+					class="text-muted-foreground/50 hover:text-primary transition-colors"
+					onclick={(e) => e.stopPropagation()}
+					aria-label="Open on LeetCode"
 				>
-					<ExternalLink class="h-5 w-5" />
+					<ExternalLink class="h-4 w-4" />
 				</a>
-				<Button variant="primary" size="sm" onclick={() => openLogModal(problem)}>
-					Log Attempt
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={(e) => { e.stopPropagation(); openLogModal(problem); }}
+					class="!rounded-md h-8 !px-4 !text-[10px] !font-black tracking-widest border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+				>
+					Log
 				</Button>
 			</div>
 		</div>
 	</div>
-</Card>
+</div>

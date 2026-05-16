@@ -9,7 +9,7 @@
 </script>
 
 <span
-	class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {variant === 'pattern' ? 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200' : ''} {className}"
+	class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {variant === 'pattern' ? 'bg-white/5 text-muted-foreground border border-white/10' : ''} {className}"
 >
 	{@render children()}
 </span>

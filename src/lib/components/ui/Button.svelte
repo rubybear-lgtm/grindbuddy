@@ -20,26 +20,25 @@
 	}: Props = $props();
 
 	const variantClasses = {
-		primary: 'bg-indigo-600 hover:bg-indigo-700 text-white',
-		secondary: 'bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-50',
-		ghost: 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-50'
+		primary: 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm',
+		secondary: 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border',
+		ghost: 'hover:bg-accent hover:text-accent-foreground'
 	};
 
 	const sizeClasses = {
-		sm: 'px-3 py-1.5 text-sm',
-		md: 'px-4 py-2 text-base',
-		lg: 'px-6 py-3 text-lg'
+		sm: 'h-8 px-3 text-xs',
+		md: 'h-10 px-4 py-2 text-sm',
+		lg: 'h-12 px-8 text-base'
 	};
 
 	function handleClick(e: MouseEvent) {
 		if (disabled || !onclick) return;
-		// Call onclick - it may or may not use the event parameter
 		onclick(e);
 	}
 </script>
 
 <button
-	class="inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:pointer-events-none {variantClasses[variant]} {sizeClasses[size]} {className}"
+	class="inline-flex items-center justify-center rounded-md font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none {variantClasses[variant]} {sizeClasses[size]} {className}"
 	{disabled}
 	onclick={handleClick}
 	{type}

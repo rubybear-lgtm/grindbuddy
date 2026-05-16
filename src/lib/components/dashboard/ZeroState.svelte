@@ -4,18 +4,21 @@
 	import { openSearchModal } from '$lib/stores/logsStore';
 </script>
 
-<div class="flex flex-col items-center justify-center py-16 text-center">
-	<div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-		<CheckCircle2 class="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+<div class="flex flex-col items-center justify-center py-20 text-center">
+	<div class="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+		<CheckCircle2 class="h-8 w-8 text-primary" />
 	</div>
-	<h2 class="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-50">
-		You're all caught up!
+	<h2 class="mb-2 text-xl font-black text-foreground uppercase tracking-tight">
+		All caught up
 	</h2>
-	<p class="mb-6 text-slate-600 dark:text-slate-400">
-		Great job. Want to do more? Log a new problem.
+	<p class="mb-8 text-muted-foreground font-medium">
+		Nothing due today. Log a new problem to keep building.
 	</p>
-	<Button onclick={openSearchModal} variant="primary">
-		Find a Problem
+	<Button
+		onclick={openSearchModal}
+		class="!rounded-md px-6 !text-[10px] !font-black tracking-widest border border-white/10 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+		variant="ghost"
+	>
+		Log a problem
 	</Button>
 </div>
-
