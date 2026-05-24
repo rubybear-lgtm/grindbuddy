@@ -29,20 +29,14 @@ export default function Logbook({ problems, logs, selectedProblemId }: Props) {
                 .filter((l) => l.problem_id === p.id)
                 .sort(
                     (a, b) =>
-                        new Date(b.created_at).getTime() -
-                        new Date(a.created_at).getTime(),
+                        new Date(b.timestamp).getTime() -
+                        new Date(a.timestamp).getTime(),
                 );
 
             return {
                 ...p,
                 logs: problemLogs,
-                lastLog:
-                    problemLogs.length > 0
-                        ? {
-                              ...problemLogs[0],
-                              timestamp: problemLogs[0].created_at,
-                          }
-                        : null,
+                lastLog: problemLogs.length > 0 ? problemLogs[0] : null,
             };
         });
     }, [problems, logs]);

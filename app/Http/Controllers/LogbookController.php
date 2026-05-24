@@ -41,8 +41,7 @@ class LogbookController extends Controller
                     'time_complexity' => $log->time_complexity,
                     'space_complexity' => $log->space_complexity,
                     'notes' => $log->notes,
-                    'created_at' => $log->created_at,
-                    'updated_at' => $log->updated_at,
+                    'timestamp' => $log->timestamp?->toJSON(),
                 ])->all()
                 : [],
         ]);
