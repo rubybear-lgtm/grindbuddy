@@ -2,7 +2,11 @@ import { RefreshCw } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { PatternFrequencyTable } from '@/components/analytics/pattern-frequency-table';
 import { RadarChart } from '@/components/common/radar-chart';
+import { DifficultyBadge } from '@/components/ui/difficulty-badge';
+import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { type Difficulty } from '@/lib/statusUtils';
+import { cn } from '@/lib/utils';
 
 interface Props {
     companies: any[];
@@ -176,7 +180,7 @@ export function SkillMatch({ companies }: Props) {
 
             {matchData && (
                 <div className="mt-8">
-                    <h3 className="mb-3 font-outfit text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    <h3 className="mb-3 font-heading text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Recommended Practice
                     </h3>
                     {matchData.recommendations.length === 0 ? (
@@ -220,32 +224,23 @@ export function SkillMatch({ companies }: Props) {
                                             </p>
                                         </div>
                                         <div className="flex shrink-0 items-center gap-2">
-                                            <span
-                                                className={`rounded px-1.5 py-0.5 text-xs font-medium ${
-                                                    rec.difficulty === 'Hard'
-                                                        ? 'bg-red-500/10 text-red-500'
-                                                        : rec.difficulty === 'Medium'
-                                                          ? 'bg-amber-500/10 text-amber-500'
-                                                          : 'bg-green-500/10 text-green-500'
-                                                }`}
-                                            >
-                                                {rec.difficulty}
-                                            </span>
-                                            <span
-                                                className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+                                            <DifficultyBadge difficulty={rec.difficulty as Difficulty} />
+                                            <Badge
+                                                variant="outline"
+                                                className={cn(
                                                     rec.status === 'unsolved'
-                                                        ? 'bg-primary/10 text-primary'
+                                                        ? 'border-blue-500/20 bg-blue-500/15 text-blue-400'
                                                         : rec.status === 'suboptimal'
-                                                          ? 'bg-amber-500/10 text-amber-500'
-                                                          : 'bg-orange-500/10 text-orange-500'
-                                                }`}
+                                                          ? 'border-amber-500/20 bg-amber-500/15 text-amber-400'
+                                                          : 'border-orange-500/20 bg-orange-500/15 text-orange-400',
+                                                )}
                                             >
                                                 {rec.status === 'unsolved'
                                                     ? 'New'
                                                     : rec.status === 'suboptimal'
                                                       ? 'Revisit'
                                                       : 'Stale'}
-                                            </span>
+                                            </Badge>
                                         </div>
                                     </li>
                                 ),
