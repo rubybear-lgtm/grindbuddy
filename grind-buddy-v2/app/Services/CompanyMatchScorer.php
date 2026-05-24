@@ -116,7 +116,7 @@ class CompanyMatchScorer
                 'mastery' => $mastery,
                 'gap' => max(0, 100 - $composite),
                 'recency' => $recency,
-                'level' => $this->resolveLevel($companyCount),
+                'level' => $this->resolveUserLevel($composite),
             ];
         }
 
@@ -160,12 +160,13 @@ class CompanyMatchScorer
         ];
     }
 
-    public function resolveLevel(int $companyCount): string
+    public function resolveUserLevel(int $composite): string
     {
         return match (true) {
-            $companyCount <= 1 => 'beginner',
-            $companyCount <= 3 => 'intermediate',
-            default => 'advanced',
+            $composite >= 80 => 'expert',
+            $composite >= 50 => 'proficient',
+            $composite >= 20 => 'developing',
+            default => 'beginner',
         };
     }
 }

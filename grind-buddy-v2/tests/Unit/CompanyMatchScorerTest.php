@@ -280,8 +280,8 @@ it('S3: all Suboptimal logs produce coverage=100 alignment=50 composite=75 maste
         ->and($result['mastery'])->toBe(0);
 });
 
-// S4: Level reflects company, not user
-it('S4: two users with opposite skill levels get the same level label because it derives from companyCount', function () {
+// S4: Level reflects user composite
+it('S4 — level reflects user composite', function () {
     $problems = makeProblems([
         ['id' => 'p1', 'difficulty' => 'Easy', 'patterns' => ['Linked List']],
         ['id' => 'p2', 'difficulty' => 'Hard', 'patterns' => ['Linked List']],
@@ -295,9 +295,8 @@ it('S4: two users with opposite skill levels get the same level label because it
     $noviceResult = scorer()->computePatternMetrics($problems, makeLogs([]))['Linked List'];
     $expertResult = scorer()->computePatternMetrics($problems, $expertLogs)['Linked List'];
 
-    expect($noviceResult['level'])->toBe('intermediate')
-        ->and($expertResult['level'])->toBe('intermediate')
-        ->and($noviceResult['level'])->toBe($expertResult['level']);
+    expect($noviceResult['level'])->toBe('beginner')
+        ->and($expertResult['level'])->toBe('expert');
 });
 
 // S5: No overall score
