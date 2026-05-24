@@ -42,7 +42,9 @@ it('E1: full expert user gets composite=100 on all patterns', function () {
         ->and($patternReadiness)->toHaveKeys(['Pattern A', 'Pattern B', 'Pattern C'])
         ->and($patternReadiness['Pattern A'])->toBe(100)
         ->and($patternReadiness['Pattern B'])->toBe(100)
-        ->and($patternReadiness['Pattern C'])->toBe(100);
+        ->and($patternReadiness['Pattern C'])->toBe(100)
+        ->and($response->json('recommendations'))->toBeArray()
+        ->and($response->json('recommendations'))->toBeEmpty();
 });
 
 it('E2: zero coverage user gets all-zero metrics and no division-by-zero errors', function () {
@@ -65,7 +67,11 @@ it('E2: zero coverage user gets all-zero metrics and no division-by-zero errors'
         ->and($response->json('patterns.Pattern A.mastery'))->toBe(0)
         ->and($response->json('patterns.Pattern A.gap'))->toBe(100)
         ->and($response->json('user.totalAttempted'))->toBe(0)
-        ->and($response->json('user.overallReadiness'))->toBe(0);
+        ->and($response->json('user.overallReadiness'))->toBe(0)
+        ->and($response->json('recommendations'))->toBeArray()
+        ->and(count($response->json('recommendations')))->toBeGreaterThan(0)
+        ->and($response->json('recommendations.0.status'))->toBe('unsolved')
+        ->and($response->json('recommendations.0'))->toHaveKeys(['title', 'difficulty', 'pattern', 'status', 'reason', 'priority']);
 });
 
 it('E3: per-pattern coverage is isolated correctly across patterns with varying user completion', function () {

@@ -37,6 +37,13 @@ class CompanyMatchController extends Controller
 
         $patterns = $this->scorer->computePatternMetrics($problems, $userLogs);
         $overall = $this->scorer->computeOverallReadiness($patterns, $summary['patternCounts']);
+        $recommendations = $this->scorer->recommendProblems(
+            $problems,
+            $userLogs,
+            $patterns,
+            $summary['patternPercentages'],
+            $companyModel->name
+        );
 
         return response()->json([
             'company' => [
@@ -57,7 +64,7 @@ class CompanyMatchController extends Controller
                 ),
             ],
             'patterns' => $patterns,
-            'recommendations' => [],
+            'recommendations' => $recommendations,
         ]);
     }
 }
