@@ -167,6 +167,12 @@ it('I6: Optimal > Suboptimal > no logs in composite ordering', function () {
 
 // I7: Composite formula
 it('I7: composite equals round((coverage + alignment) / 2)', function () {
+    // 4 problems: p1=Easy(1), p2=Medium(2), p3=Hard(3), p4=Hard(3)
+    // Company total weight = 1 + 2 + 3 + 3 = 9
+    // User solved p1 (Optimal), p2 (Optimal), p3 (Suboptimal)
+    // coverage numerator = 1 + 2 + 3 = 6; coverage = round(6/9 * 100) = 67
+    // alignment numerator = 1*1 + 2*1 + 3*0.5 = 1 + 2 + 1.5 = 4.5; alignment = round(4.5/9 * 100) = 50
+    // composite = round((67 + 50) / 2) = round(58.5) = 59
     $problems = makeProblems([
         ['id' => 'p1', 'difficulty' => 'Easy', 'patterns' => ['Sliding Window']],
         ['id' => 'p2', 'difficulty' => 'Medium', 'patterns' => ['Sliding Window']],
@@ -182,9 +188,9 @@ it('I7: composite equals round((coverage + alignment) / 2)', function () {
 
     $result = scorer()->computePatternMetrics($problems, $logs)['Sliding Window'];
 
-    expect($result['coverage'])->toBe(75)
-        ->and($result['alignment'])->toBe(63)
-        ->and($result['composite'])->toBe(69);
+    expect($result['coverage'])->toBe(67)
+        ->and($result['alignment'])->toBe(50)
+        ->and($result['composite'])->toBe(59);
 });
 
 it('I8: coverage stays capped at 100 when a problem is logged twice', function () {
@@ -203,8 +209,8 @@ it('I8: coverage stays capped at 100 when a problem is logged twice', function (
         ->and($result['mastery'])->toBe(100);
 });
 
-// S1: Recency blindness
-it('S1: a user who practiced today scores identically to one who practiced 2 years ago (recency is binary)', function () {
+// S1: Recency decay
+it('S1: recency decays over time — recent practice scores higher than stale practice', function () {
     $problems = makeProblems([
         ['id' => 'p1', 'difficulty' => 'Medium', 'patterns' => ['Two Pointers']],
     ]);
@@ -220,32 +226,35 @@ it('S1: a user who practiced today scores identically to one who practiced 2 yea
     $staleResult = scorer()->computePatternMetrics($problems, $staleLogs)['Two Pointers'];
 
     expect($recentResult['recency'])->toBe(100)
-        ->and($staleResult['recency'])->toBe(100)
-        ->and($recentResult['composite'])->toBe($staleResult['composite']);
+        ->and($staleResult['recency'])->toBe(0)
+        ->and($recentResult['recency'])->toBeGreaterThan($staleResult['recency']);
 });
 
-// S2: Difficulty blindness
-it('S2: solving an Easy problem Optimally gives the same composite as solving a Hard problem Optimally', function () {
-    $easyProblems = makeProblems([
-        ['id' => 'easy-p1', 'difficulty' => 'Easy', 'patterns' => ['Easy Pattern']],
-    ]);
-    $hardProblems = makeProblems([
-        ['id' => 'hard-p1', 'difficulty' => 'Hard', 'patterns' => ['Hard Pattern']],
+// S2: Difficulty weighting
+it('S2: Hard problems contribute more to coverage than Easy problems', function () {
+    // Company has 1 Easy + 1 Hard problem in a pattern
+    // Hard = 3×, Medium = 2×, Easy = 1× weight
+    // Company total weight = 1 + 3 = 4
+    // User A solved only the Easy: coverage = round(1/4 * 100) = 25
+    // User B solved only the Hard: coverage = round(3/4 * 100) = 75
+    $problems = makeProblems([
+        ['id' => 'p-easy', 'difficulty' => 'Easy', 'patterns' => ['Difficulty Test']],
+        ['id' => 'p-hard', 'difficulty' => 'Hard', 'patterns' => ['Difficulty Test']],
     ]);
 
     $easyLogs = makeLogs([
-        ['problem_id' => 'easy-p1', 'status' => 'Optimal', 'timestamp' => now()],
+        ['problem_id' => 'p-easy', 'status' => 'Optimal', 'timestamp' => now()],
     ]);
     $hardLogs = makeLogs([
-        ['problem_id' => 'hard-p1', 'status' => 'Optimal', 'timestamp' => now()],
+        ['problem_id' => 'p-hard', 'status' => 'Optimal', 'timestamp' => now()],
     ]);
 
-    $easyComposite = scorer()->computePatternMetrics($easyProblems, $easyLogs)['Easy Pattern']['composite'];
-    $hardComposite = scorer()->computePatternMetrics($hardProblems, $hardLogs)['Hard Pattern']['composite'];
+    $easyResult = scorer()->computePatternMetrics($problems, $easyLogs)['Difficulty Test'];
+    $hardResult = scorer()->computePatternMetrics($problems, $hardLogs)['Difficulty Test'];
 
-    expect($easyComposite)->toBe(100)
-        ->and($hardComposite)->toBe(100)
-        ->and($easyComposite)->toBe($hardComposite);
+    expect($hardResult['coverage'])->toBeGreaterThan($easyResult['coverage'])
+        ->and($easyResult['coverage'])->toBe(25)
+        ->and($hardResult['coverage'])->toBe(75);
 });
 
 // S3: Suboptimal-only baseline

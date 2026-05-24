@@ -52,11 +52,26 @@ class CompanyMatchScorer
 
             $userCount = $patternUserLogs->count();
             $userOptimal = $patternUserLogs->where('status', 'Optimal')->count();
-            $userWeighted = $patternUserLogs->sum(static fn (Log $log): float => match ($log->status) {
-                'Optimal' => 1,
-                'Suboptimal' => 0.5,
-                default => 0,
-            });
+
+            $difficultyWeight = static fn (Problem $problem): float => match ($problem->difficulty) {
+                'Hard' => 3.0,
+                'Medium' => 2.0,
+                default => 1.0,
+            };
+
+            $companyWeight = (float) array_sum(array_map($difficultyWeight, array_values($patternProblems)));
+
+            $userCoverageWeight = $patternUserLogs->sum(
+                static fn (Log $log): float => $difficultyWeight($patternProblems[$log->problem_id])
+            );
+
+            $userWeighted = $patternUserLogs->sum(
+                static fn (Log $log): float => $difficultyWeight($patternProblems[$log->problem_id]) * match ($log->status) {
+                    'Optimal' => 1.0,
+                    'Suboptimal' => 0.5,
+                    default => 0.0,
+                }
+            );
 
             $companyDifficulty = ['Easy' => 0, 'Medium' => 0, 'Hard' => 0];
             foreach ($patternProblems as $problem) {
@@ -69,10 +84,14 @@ class CompanyMatchScorer
                 $userDifficulty[$difficulty]++;
             }
 
-            $coverage = $companyCount > 0 ? (int) round(($userCount / $companyCount) * 100) : 0;
-            $alignment = $companyCount > 0 ? (int) round(($userWeighted / $companyCount) * 100) : 0;
+            $coverage = $companyWeight > 0 ? (int) round(($userCoverageWeight / $companyWeight) * 100) : 0;
+            $alignment = $companyWeight > 0 ? (int) round(($userWeighted / $companyWeight) * 100) : 0;
             $composite = (int) round(($coverage + $alignment) / 2);
-            $mastery = $companyCount > 0 ? (int) round(($userOptimal / $companyCount) * 100) : 0;
+
+            $userMasteryWeight = $patternUserLogs->where('status', 'Optimal')->sum(
+                static fn (Log $log): float => $difficultyWeight($patternProblems[$log->problem_id])
+            );
+            $mastery = $companyWeight > 0 ? (int) round(($userMasteryWeight / $companyWeight) * 100) : 0;
 
             $recency = 0;
             if ($patternUserLogs->isNotEmpty()) {
