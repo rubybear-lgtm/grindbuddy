@@ -44,6 +44,10 @@ class CompanyMatchScorer
             $patternUserLogs = $userLogs->filter(
                 static fn (Log $log): bool => isset($patternProblems[$log->problem_id])
             );
+            $patternUserLogs = $patternUserLogs
+                ->sortByDesc('timestamp')
+                ->unique('problem_id')
+                ->values();
 
             $userCount = $patternUserLogs->count();
             $userOptimal = $patternUserLogs->where('status', 'Optimal')->count();
