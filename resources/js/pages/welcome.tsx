@@ -431,16 +431,29 @@ export default function Welcome() {
                                         ))}
                                     </ul>
 
-                                    <Button
-                                        asChild
-                                        size="lg"
-                                        className="h-14 rounded-md px-10 font-black tracking-widest shadow-[0_0_40px_oklch(0.85_0.18_165_/_0.25)] transition-all hover:scale-105"
+                                    <a
+                                        href="https://chromewebstore.google.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex h-16 items-center gap-4 rounded-2xl border border-border bg-card/85 px-6 shadow-2xl backdrop-blur-xl transition-all hover:scale-[1.03] hover:border-primary/30 hover:bg-card active:scale-[0.98] group w-fit"
                                     >
-                                        <a href="https://chromewebstore.google.com" target="_blank" rel="noopener noreferrer">
-                                            <ArrowUpRight className="mr-2 h-5 w-5" />
-                                            Get the extension
-                                        </a>
-                                    </Button>
+                                        <svg className="h-8 w-8 shrink-0 transition-transform group-hover:rotate-12 duration-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#E2E8F0" opacity="0.05"/>
+                                            <path d="M12 5.5C15.5899 5.5 18.5 8.41015 18.5 12C18.5 15.5899 15.5899 18.5 12 18.5C8.41015 18.5 5.5 15.5899 5.5 12C5.5 8.41015 8.41015 5.5 12 5.5Z" fill="#FFFFFF"/>
+                                            <path d="M12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7Z" fill="#4285F4"/>
+                                            <path d="M12 0C7.8 0 4.15 2.15 2.05 5.4L6.95 13.9C7.45 11.25 9.45 9.25 12 8.85H21.85C20.85 3.75 16.85 0 12 0Z" fill="#EA4335"/>
+                                            <path d="M6.95 13.9L2.05 5.4C0.75 7.35 0 9.6 0 12C0 17.55 3.9 22.15 9.15 23.45L14.05 15C13.45 15.6 12.75 16 12 16C9.1 16 6.7 13.9 6.25 11.15L6.95 13.9Z" fill="#34A853"/>
+                                            <path d="M14.05 15L9.15 23.45C10.05 23.8 11.05 24 12 24C18.65 24 24 18.65 24 12C24 10.9 23.85 9.85 23.55 8.85H13.75C15.8 9.6 17.25 11.65 17 14C16.85 15.35 16.05 16.5 15 17.25L14.05 15Z" fill="#FBBC05"/>
+                                        </svg>
+                                        <div className="flex flex-col text-left">
+                                            <span className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase leading-none">
+                                                Available in the
+                                            </span>
+                                            <span className="text-base font-black tracking-tight text-foreground leading-tight mt-0.5">
+                                                Chrome Web Store
+                                            </span>
+                                        </div>
+                                    </a>
                                 </div>
 
                                 {/* Right: visual mockup */}
