@@ -21,6 +21,7 @@ class CompanyMatchScorer
      *     userDifficulty: array{Easy: int, Medium: int, Hard: int},
      *     coverage: int,
      *     alignment: int,
+     *     rawComposite: int,
      *     composite: int,
      *     mastery: int,
      *     gap: int,
@@ -86,7 +87,6 @@ class CompanyMatchScorer
 
             $coverage = $companyWeight > 0 ? (int) round(($userCoverageWeight / $companyWeight) * 100) : 0;
             $alignment = $companyWeight > 0 ? (int) round(($userWeighted / $companyWeight) * 100) : 0;
-            $composite = (int) round(($coverage + $alignment) / 2);
 
             $userMasteryWeight = $patternUserLogs->where('status', 'Optimal')->sum(
                 static fn (Log $log): float => $difficultyWeight($patternProblems[$log->problem_id])
@@ -103,6 +103,10 @@ class CompanyMatchScorer
                 }
             }
 
+            $rawComposite = (int) round(($coverage + $alignment) / 2);
+            $recencyFactor = 0.6 + 0.4 * ($recency / 100);
+            $composite = (int) round($rawComposite * $recencyFactor);
+
             $patterns[$pattern] = [
                 'companyCount' => $companyCount,
                 'companyDifficulty' => $companyDifficulty,
@@ -112,6 +116,7 @@ class CompanyMatchScorer
                 'userDifficulty' => $userDifficulty,
                 'coverage' => $coverage,
                 'alignment' => $alignment,
+                'rawComposite' => $rawComposite,
                 'composite' => $composite,
                 'mastery' => $mastery,
                 'gap' => max(0, 100 - $composite),
