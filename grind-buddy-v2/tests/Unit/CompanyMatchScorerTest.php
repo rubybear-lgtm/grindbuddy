@@ -352,3 +352,113 @@ it('S6 — pattern composite and patternFrequency are exposed as distinct values
         ->and($patternFrequency)->toBeInt()
         ->and($composite)->not->toBe($patternFrequency);
 });
+
+// Recommendations
+
+it('R1: returns empty recommendations when all problems solved Optimally with fresh recency', function () {
+    $problems = makeProblems([
+        ['id' => 'p1', 'difficulty' => 'Hard', 'patterns' => ['DP'], 'title' => 'P1'],
+        ['id' => 'p2', 'difficulty' => 'Medium', 'patterns' => ['DP'], 'title' => 'P2'],
+    ]);
+    $logs = makeLogs([
+        ['problem_id' => 'p1', 'status' => 'Optimal', 'timestamp' => now()],
+        ['problem_id' => 'p2', 'status' => 'Optimal', 'timestamp' => now()],
+    ]);
+    $metrics = scorer()->computePatternMetrics($problems, $logs);
+    $summary = scorer()->summarizeCompanyPatterns($problems);
+
+    $result = scorer()->recommendProblems($problems, $logs, $metrics, $summary['patternPercentages'], 'Google');
+
+    expect($result)->toBeEmpty();
+});
+
+it('R2: returns unsolved problems sorted by priority (gap × emphasis × difficulty)', function () {
+    // Pattern A: 1 Hard problem (50% emphasis). Pattern B: 1 Easy problem (50% emphasis).
+    // Both unsolved → gap=100 for both patterns.
+    // Hard A priority: 100 * (50/100) * 3 * 1.0 = 150
+    // Easy B priority: 100 * (50/100) * 1 * 1.0 = 50
+    $problems = makeProblems([
+        ['id' => 'p1', 'difficulty' => 'Hard', 'patterns' => ['Pattern A'], 'title' => 'Hard A'],
+        ['id' => 'p2', 'difficulty' => 'Easy', 'patterns' => ['Pattern B'], 'title' => 'Easy B'],
+    ]);
+    $logs = makeLogs([]);
+    $metrics = scorer()->computePatternMetrics($problems, $logs);
+    $summary = scorer()->summarizeCompanyPatterns($problems);
+
+    $result = scorer()->recommendProblems($problems, $logs, $metrics, $summary['patternPercentages'], 'Google');
+
+    expect($result)->toHaveCount(2)
+        ->and($result[0]['problemId'])->toBe('p1')
+        ->and($result[0]['status'])->toBe('unsolved')
+        ->and($result[1]['problemId'])->toBe('p2')
+        ->and($result[1]['status'])->toBe('unsolved');
+});
+
+it('R3: stale Optimal solve is boosted above unsolved via recency multiplier', function () {
+    // Setup: 2 Medium problems in "Arrays". p1 solved Optimally 2 years ago (stale). p2 unsolved.
+    // After scoring: recency=0, gap=70 (composite decayed to 30).
+    // p1 (stale): priority = 70 * 1.0 * 2 * 2.0 = 280
+    // p2 (unsolved): priority = 70 * 1.0 * 2 * 1.0 = 140
+    $problems = makeProblems([
+        ['id' => 'p1', 'difficulty' => 'Medium', 'patterns' => ['Arrays'], 'title' => 'P1'],
+        ['id' => 'p2', 'difficulty' => 'Medium', 'patterns' => ['Arrays'], 'title' => 'P2'],
+    ]);
+    $logs = makeLogs([
+        ['problem_id' => 'p1', 'status' => 'Optimal', 'timestamp' => now()->subYears(2)->toDateTimeString()],
+    ]);
+    $metrics = scorer()->computePatternMetrics($problems, $logs);
+    $summary = scorer()->summarizeCompanyPatterns($problems);
+
+    $result = scorer()->recommendProblems($problems, $logs, $metrics, $summary['patternPercentages'], 'Google');
+
+    expect($result[0]['problemId'])->toBe('p1')
+        ->and($result[0]['status'])->toBe('stale')
+        ->and($result[1]['problemId'])->toBe('p2')
+        ->and($result[1]['status'])->toBe('unsolved');
+});
+
+it('R4: suboptimal solved problem appears as a recommendation', function () {
+    $problems = makeProblems([
+        ['id' => 'p1', 'difficulty' => 'Hard', 'patterns' => ['DP'], 'title' => 'P1'],
+    ]);
+    $logs = makeLogs([
+        ['problem_id' => 'p1', 'status' => 'Suboptimal', 'timestamp' => now()],
+    ]);
+    $metrics = scorer()->computePatternMetrics($problems, $logs);
+    $summary = scorer()->summarizeCompanyPatterns($problems);
+
+    $result = scorer()->recommendProblems($problems, $logs, $metrics, $summary['patternPercentages'], 'Google');
+
+    expect($result)->toHaveCount(1)
+        ->and($result[0]['status'])->toBe('suboptimal')
+        ->and($result[0]['problemId'])->toBe('p1');
+});
+
+it('R5: respects the limit parameter', function () {
+    $problems = makeProblems(
+        array_map(
+            fn (int $i): array => ['id' => "p{$i}", 'difficulty' => 'Medium', 'patterns' => ['Stack'], 'title' => "P{$i}"],
+            range(1, 10)
+        )
+    );
+    $logs = makeLogs([]);
+    $metrics = scorer()->computePatternMetrics($problems, $logs);
+    $summary = scorer()->summarizeCompanyPatterns($problems);
+
+    $result = scorer()->recommendProblems($problems, $logs, $metrics, $summary['patternPercentages'], 'Google', 3);
+
+    expect($result)->toHaveCount(3);
+});
+
+it('R6: skips problems with no pattern in patternMetrics', function () {
+    $problems = makeProblems([
+        ['id' => 'p1', 'difficulty' => 'Hard', 'patterns' => [], 'title' => 'P1'],
+    ]);
+    $logs = makeLogs([]);
+    $metrics = scorer()->computePatternMetrics($problems, $logs);
+    $summary = scorer()->summarizeCompanyPatterns($problems);
+
+    $result = scorer()->recommendProblems($problems, $logs, $metrics, $summary['patternPercentages'], 'Google');
+
+    expect($result)->toBeEmpty();
+});
