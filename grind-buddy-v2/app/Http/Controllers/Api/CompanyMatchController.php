@@ -51,6 +51,10 @@ class CompanyMatchController extends Controller
             'user' => [
                 'totalAttempted' => $userLogs->count(),
                 'overallReadiness' => $overall,
+                'patternReadiness' => array_map(
+                    static fn (array $m): int => $m['composite'],
+                    $patterns
+                ),
             ],
             'patterns' => $patterns,
             'recommendations' => [],

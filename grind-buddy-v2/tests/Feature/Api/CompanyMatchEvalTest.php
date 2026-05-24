@@ -31,11 +31,18 @@ it('E1: full expert user gets composite=100 on all patterns', function () {
 
     $response->assertOk();
 
+    $patternReadiness = $response->json('user.patternReadiness');
+
     expect($response->json('patterns.Pattern A.composite'))->toBe(100)
         ->and($response->json('patterns.Pattern B.composite'))->toBe(100)
         ->and($response->json('patterns.Pattern C.composite'))->toBe(100)
         ->and($response->json('user.totalAttempted'))->toBe(6)
-        ->and($response->json('user.overallReadiness'))->toBe(100);
+        ->and($response->json('user.overallReadiness'))->toBe(100)
+        ->and($patternReadiness)->toBeArray()
+        ->and($patternReadiness)->toHaveKeys(['Pattern A', 'Pattern B', 'Pattern C'])
+        ->and($patternReadiness['Pattern A'])->toBe(100)
+        ->and($patternReadiness['Pattern B'])->toBe(100)
+        ->and($patternReadiness['Pattern C'])->toBe(100);
 });
 
 it('E2: zero coverage user gets all-zero metrics and no division-by-zero errors', function () {

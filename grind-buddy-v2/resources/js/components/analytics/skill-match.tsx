@@ -60,15 +60,17 @@ export function SkillMatch({ companies }: Props) {
         const patterns = matchData.company.patternFrequencies;
         const patternCounts = matchData.company.patternCounts;
 
+        const patternReadiness = matchData.user.patternReadiness ?? {};
+
         const patternsWithData = CORE_PATTERNS.filter((pattern) => {
-            const userValue = matchData?.patterns[pattern]?.composite ?? 0;
+            const userValue = patternReadiness[pattern] ?? 0;
             const companyValue = patterns[pattern] ?? 0;
 
             return userValue > 0 || companyValue > 0;
         });
 
         const userDataPoints = patternsWithData.map(
-            (pattern) => matchData?.patterns[pattern]?.composite ?? 0,
+            (pattern) => patternReadiness[pattern] ?? 0,
         );
         const companyDataPoints = patternsWithData.map(
             (pattern) => patterns[pattern] ?? 0,
@@ -83,13 +85,13 @@ export function SkillMatch({ companies }: Props) {
         return {
             labels: patternsWithData,
             primary: {
-                label: 'You',
+                label: 'Your readiness',
                 data: userDataPoints,
                 counts: userCounts,
                 color: 'hsl(217, 91%, 60%)',
             },
             comparison: {
-                label: matchData.company.name,
+                label: 'Interview emphasis',
                 data: companyDataPoints,
                 counts: companyCounts,
                 color: matchData.company.color || '#6366f1',
