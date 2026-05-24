@@ -69,8 +69,10 @@ export function SkillMatch({ companies }: Props) {
             return userValue > 0 || companyValue > 0;
         });
 
+        const roundToNearest5 = (n: number) => Math.round(n / 5) * 5;
+
         const userDataPoints = patternsWithData.map(
-            (pattern) => patternReadiness[pattern] ?? 0,
+            (pattern) => roundToNearest5(patternReadiness[pattern] ?? 0),
         );
         const companyDataPoints = patternsWithData.map(
             (pattern) => patterns[pattern] ?? 0,
@@ -171,6 +173,87 @@ export function SkillMatch({ companies }: Props) {
                     </div>
                 )}
             </div>
+
+            {matchData && (
+                <div className="mt-8">
+                    <h3 className="mb-3 font-outfit text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        Recommended Practice
+                    </h3>
+                    {matchData.recommendations.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Nothing urgent — you're covering this company well.
+                        </p>
+                    ) : (
+                        <ol className="space-y-2">
+                            {matchData.recommendations.map(
+                                (
+                                    rec: {
+                                        problemId: string;
+                                        title: string;
+                                        difficulty: string;
+                                        pattern: string;
+                                        status: string;
+                                        reason: string;
+                                        leetcodeUrl: string | null;
+                                        neetcodeUrl: string | null;
+                                    },
+                                    i: number,
+                                ) => (
+                                    <li
+                                        key={rec.problemId}
+                                        className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+                                    >
+                                        <span className="w-4 shrink-0 text-xs tabular-nums text-muted-foreground">
+                                            {i + 1}
+                                        </span>
+                                        <div className="min-w-0 flex-1">
+                                            <a
+                                                href={rec.leetcodeUrl ?? rec.neetcodeUrl ?? '#'}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="block truncate text-sm font-medium hover:underline"
+                                            >
+                                                {rec.title}
+                                            </a>
+                                            <p className="mt-0.5 text-xs text-muted-foreground">
+                                                {rec.reason}
+                                            </p>
+                                        </div>
+                                        <div className="flex shrink-0 items-center gap-2">
+                                            <span
+                                                className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+                                                    rec.difficulty === 'Hard'
+                                                        ? 'bg-red-500/10 text-red-500'
+                                                        : rec.difficulty === 'Medium'
+                                                          ? 'bg-amber-500/10 text-amber-500'
+                                                          : 'bg-green-500/10 text-green-500'
+                                                }`}
+                                            >
+                                                {rec.difficulty}
+                                            </span>
+                                            <span
+                                                className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+                                                    rec.status === 'unsolved'
+                                                        ? 'bg-primary/10 text-primary'
+                                                        : rec.status === 'suboptimal'
+                                                          ? 'bg-amber-500/10 text-amber-500'
+                                                          : 'bg-orange-500/10 text-orange-500'
+                                                }`}
+                                            >
+                                                {rec.status === 'unsolved'
+                                                    ? 'New'
+                                                    : rec.status === 'suboptimal'
+                                                      ? 'Revisit'
+                                                      : 'Stale'}
+                                            </span>
+                                        </div>
+                                    </li>
+                                ),
+                            )}
+                        </ol>
+                    )}
+                </div>
+            )}
 
             {matchData &&
                 Object.keys(matchData.company.patternFrequencies).length >
