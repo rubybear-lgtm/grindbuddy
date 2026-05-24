@@ -127,13 +127,11 @@ export default function Dashboard({
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-black text-primary transition-all hover:bg-primary/20 hover:scale-[1.03] active:scale-[0.98] ml-2"
                                 >
-                                    <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 5.5C15.5899 5.5 18.5 8.41015 18.5 12C18.5 15.5899 15.5899 18.5 12 18.5C8.41015 18.5 5.5 15.5899 5.5 12C5.5 8.41015 8.41015 5.5 12 5.5Z" fill="#FFFFFF"/>
-                                        <path d="M12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7Z" fill="#4285F4"/>
-                                        <path d="M12 0C7.8 0 4.15 2.15 2.05 5.4L6.95 13.9C7.45 11.25 9.45 9.25 12 8.85H21.85C20.85 3.75 16.85 0 12 0Z" fill="#EA4335"/>
-                                        <path d="M6.95 13.9L2.05 5.4C0.75 7.35 0 9.6 0 12C0 17.55 3.9 22.15 9.15 23.45L14.05 15C13.45 15.6 12.75 16 12 16C9.1 16 6.7 13.9 6.25 11.15L6.95 13.9Z" fill="#34A853"/>
-                                        <path d="M14.05 15L9.15 23.45C10.05 23.8 11.05 24 12 24C18.65 24 24 18.65 24 12C24 10.9 23.85 9.85 23.55 8.85H13.75C15.8 9.6 17.25 11.65 17 14C16.85 15.35 16.05 16.5 15 17.25L14.05 15Z" fill="#FBBC05"/>
-                                    </svg>
+                                    <img
+                                        src="/chrome_logo.png"
+                                        alt="Chrome"
+                                        className="h-3.5 w-3.5 shrink-0"
+                                    />
                                     Add to Chrome
                                 </a>
                             </p>
