@@ -174,11 +174,13 @@ export default function Dashboard({
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-black text-primary transition-all hover:bg-primary/20 hover:scale-[1.03] active:scale-[0.98] ml-2"
                                 >
-                                    <img
-                                        src="/chrome_logo.png"
-                                        alt="Chrome"
-                                        className="h-3.5 w-3.5 shrink-0"
-                                    />
+                                    <svg viewBox="0 0 48 48" className="h-3.5 w-3.5 shrink-0">
+                                        <circle cx="24" cy="24" r="22" fill="#fff"/>
+                                        <path d="M24 5c-5.5 0-10.3 2.9-12.9 7.2l6.5 11.2C18.2 21.4 20.8 19 24 19c3.2 0 5.8 2.4 6.4 5.5l6.5-11.2C34.3 7.9 29.5 5 24 5z" fill="#4285F4"/>
+                                        <path d="M12.1 36.8C15.3 40.4 19.9 43 24 43c5.5 0 10.3-2.9 12.9-7.2l-6.5-11.2c-.6 3.1-3.2 5.5-6.4 5.5s-5.8-2.4-6.4-5.5l-6.5 11.2c.2.3.3.7.5 1z" fill="#34A853"/>
+                                        <path d="M24 19c-3.2 0-5.8 2.4-6.4 5.5L11 12.3C9.1 15.6 8 19.6 8 24c0 4.4 1.1 8.4 3 11.7l6.6-11.4C17.2 21.4 19.8 19 24 19z" fill="#FBBC05"/>
+                                        <circle cx="24" cy="24" r="5" fill="#EA4335"/>
+                                    </svg>
                                     Add to Chrome
                                 </a>
                             </p>
