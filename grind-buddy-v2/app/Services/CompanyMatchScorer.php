@@ -34,12 +34,6 @@ class CompanyMatchScorer
         $summary = $this->summarizeCompanyPatterns($problems);
         $patterns = [];
 
-        $difficultyWeight = static fn (Problem $problem): float => match ($problem->difficulty) {
-            'Hard' => 3.0,
-            'Medium' => 2.0,
-            default => 1.0,
-        };
-
         foreach ($summary['patternCounts'] as $pattern => $companyCount) {
             $patternProblems = [];
 
@@ -60,14 +54,14 @@ class CompanyMatchScorer
             $userCount = $patternUserLogs->count();
             $userOptimal = $patternUserLogs->where('status', 'Optimal')->count();
 
-            $companyWeight = (float) array_sum(array_map($difficultyWeight, array_values($patternProblems)));
+            $companyWeight = (float) array_sum(array_map(fn (Problem $p): float => $this->difficultyWeight($p->difficulty), array_values($patternProblems)));
 
             $userCoverageWeight = $patternUserLogs->sum(
-                static fn (Log $log): float => $difficultyWeight($patternProblems[$log->problem_id])
+                fn (Log $log): float => $this->difficultyWeight($patternProblems[$log->problem_id]->difficulty)
             );
 
             $userWeighted = $patternUserLogs->sum(
-                static fn (Log $log): float => $difficultyWeight($patternProblems[$log->problem_id]) * match ($log->status) {
+                fn (Log $log): float => $this->difficultyWeight($patternProblems[$log->problem_id]->difficulty) * match ($log->status) {
                     'Optimal' => 1.0,
                     'Suboptimal' => 0.5,
                     default => 0.0,
@@ -89,7 +83,7 @@ class CompanyMatchScorer
             $alignment = $companyWeight > 0 ? (int) round(($userWeighted / $companyWeight) * 100) : 0;
 
             $userMasteryWeight = $patternUserLogs->where('status', 'Optimal')->sum(
-                static fn (Log $log): float => $difficultyWeight($patternProblems[$log->problem_id])
+                fn (Log $log): float => $this->difficultyWeight($patternProblems[$log->problem_id]->difficulty)
             );
             $mastery = $companyWeight > 0 ? (int) round(($userMasteryWeight / $companyWeight) * 100) : 0;
 
@@ -215,12 +209,6 @@ class CompanyMatchScorer
             ->unique('problem_id')
             ->keyBy('problem_id');
 
-        $difficultyWeight = static fn (string $difficulty): float => match ($difficulty) {
-            'Hard' => 3.0,
-            'Medium' => 2.0,
-            default => 1.0,
-        };
-
         $recommendations = [];
 
         foreach ($problems as $problem) {
@@ -251,7 +239,7 @@ class CompanyMatchScorer
                 continue;
             }
 
-            $priority = $gap * ($emphasis / 100) * $difficultyWeight($problem->difficulty) * $recencyMultiplier;
+            $priority = $gap * ($emphasis / 100) * $this->difficultyWeight($problem->difficulty) * $recencyMultiplier;
 
             $gapDescriptor = match (true) {
                 $gap >= 60 => 'High-gap pattern',
@@ -274,13 +262,13 @@ class CompanyMatchScorer
             ];
         }
 
-        usort($recommendations, static function (array $a, array $b) use ($difficultyWeight): int {
+        usort($recommendations, function (array $a, array $b): int {
             $byPriority = $b['priority'] <=> $a['priority'];
             if ($byPriority !== 0) {
                 return $byPriority;
             }
 
-            return $difficultyWeight($b['difficulty']) <=> $difficultyWeight($a['difficulty']);
+            return $this->difficultyWeight($b['difficulty']) <=> $this->difficultyWeight($a['difficulty']);
         });
 
         return array_slice($recommendations, 0, $limit);
@@ -293,6 +281,15 @@ class CompanyMatchScorer
             $composite >= 50 => 'proficient',
             $composite >= 20 => 'developing',
             default => 'beginner',
+        };
+    }
+
+    private function difficultyWeight(string $difficulty): float
+    {
+        return match ($difficulty) {
+            'Hard' => 3.0,
+            'Medium' => 2.0,
+            default => 1.0,
         };
     }
 }
