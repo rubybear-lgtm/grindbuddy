@@ -34,7 +34,8 @@ it('E1: full expert user gets composite=100 on all patterns', function () {
     expect($response->json('patterns.Pattern A.composite'))->toBe(100)
         ->and($response->json('patterns.Pattern B.composite'))->toBe(100)
         ->and($response->json('patterns.Pattern C.composite'))->toBe(100)
-        ->and($response->json('user.totalAttempted'))->toBe(6);
+        ->and($response->json('user.totalAttempted'))->toBe(6)
+        ->and($response->json('user.overallReadiness'))->toBe(100);
 });
 
 it('E2: zero coverage user gets all-zero metrics and no division-by-zero errors', function () {
@@ -56,7 +57,8 @@ it('E2: zero coverage user gets all-zero metrics and no division-by-zero errors'
         ->and($response->json('patterns.Pattern A.composite'))->toBe(0)
         ->and($response->json('patterns.Pattern A.mastery'))->toBe(0)
         ->and($response->json('patterns.Pattern A.gap'))->toBe(100)
-        ->and($response->json('user.totalAttempted'))->toBe(0);
+        ->and($response->json('user.totalAttempted'))->toBe(0)
+        ->and($response->json('user.overallReadiness'))->toBe(0);
 });
 
 it('E3: per-pattern coverage is isolated correctly across patterns with varying user completion', function () {
@@ -100,5 +102,7 @@ it('E3: per-pattern coverage is isolated correctly across patterns with varying 
     expect($response->json('patterns.Pattern A.coverage'))->toBe(100)
         ->and($response->json('patterns.Pattern B.coverage'))->toBe(50)
         ->and($response->json('patterns.Pattern C.coverage'))->toBe(0)
-        ->and($response->json('patterns'))->toHaveKey('Pattern C');
+        ->and($response->json('patterns'))->toHaveKey('Pattern C')
+        ->and($response->json('user.overallReadiness'))->toBeGreaterThanOrEqual(0)
+        ->and($response->json('user.overallReadiness'))->toBeLessThanOrEqual(100);
 });

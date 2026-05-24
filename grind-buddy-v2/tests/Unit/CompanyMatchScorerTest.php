@@ -299,21 +299,28 @@ it('S4 — level reflects user composite', function () {
         ->and($expertResult['level'])->toBe('expert');
 });
 
-// S5: No overall score
-it('S5: computePatternMetrics returns no top-level readiness or overall composite score', function () {
-    $problems = makeProblems([
-        ['id' => 'p1', 'difficulty' => 'Easy', 'patterns' => ['Arrays & Hashing']],
-        ['id' => 'p2', 'difficulty' => 'Medium', 'patterns' => ['Trees']],
-    ]);
-    $logs = makeLogs([
-        ['problem_id' => 'p1', 'status' => 'Optimal', 'timestamp' => now()],
-    ]);
+// S5: Overall readiness
+it('S5 — overall readiness is weighted average of pattern composites', function (): void {
+    $scorer = scorer();
 
-    $result = scorer()->computePatternMetrics($problems, $logs);
+    // Pattern A: 4 problems, composite=75. Pattern B: 2 problems, composite=25.
+    // Weighted avg = (4*75 + 2*25) / 6 = (300+50)/6 = 350/6 = 58.33 → 58
+    $patternMetrics = [
+        'Arrays & Hashing' => ['composite' => 75],
+        'Two Pointers' => ['composite' => 25],
+    ];
+    $patternCounts = [
+        'Arrays & Hashing' => 4,
+        'Two Pointers' => 2,
+    ];
 
-    expect($result)->not->toHaveKey('score')
-        ->and($result)->not->toHaveKey('readiness')
-        ->and($result)->not->toHaveKey('overallComposite');
+    $result = $scorer->computeOverallReadiness($patternMetrics, $patternCounts);
+
+    expect($result)->toBe(58);
+});
+
+it('S5 — overall readiness is 0 when no patterns', function (): void {
+    expect(scorer()->computeOverallReadiness([], []))->toBe(0);
 });
 
 // S6: Radar unit mismatch (documented via assertion comment)

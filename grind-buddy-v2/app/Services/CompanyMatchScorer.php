@@ -160,6 +160,26 @@ class CompanyMatchScorer
         ];
     }
 
+    /**
+     * @param  array<string, array{composite: int}>  $patternMetrics
+     * @param  array<string, int>  $patternCounts
+     */
+    public function computeOverallReadiness(array $patternMetrics, array $patternCounts): int
+    {
+        $totalProblems = array_sum($patternCounts);
+        if ($totalProblems === 0) {
+            return 0;
+        }
+
+        $weightedSum = 0.0;
+        foreach ($patternMetrics as $pattern => $metrics) {
+            $weight = $patternCounts[$pattern] ?? 0;
+            $weightedSum += $metrics['composite'] * $weight;
+        }
+
+        return (int) round($weightedSum / $totalProblems);
+    }
+
     public function resolveUserLevel(int $composite): string
     {
         return match (true) {

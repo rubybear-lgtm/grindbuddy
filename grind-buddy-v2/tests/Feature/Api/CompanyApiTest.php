@@ -98,19 +98,19 @@ it('returns the skill match payload shape for the authenticated user', function 
             'patternCounts' => ['stack' => 1],
             'patternDifficulty' => ['stack' => ['Easy' => 1, 'Medium' => 0, 'Hard' => 0]],
         ],
-        'user' => ['totalAttempted' => 1],
+        'user' => ['totalAttempted' => 1, 'overallReadiness' => 100],
         'patterns' => [
             'stack' => [
                 'companyCount' => 1,
                 'userCount' => 1,
                 'userWeighted' => 1,
                 'userOptimal' => 1,
-                'level' => 'beginner',
+                'level' => 'expert',
             ],
         ],
     ])->assertJsonStructure([
         'company' => ['slug', 'name', 'color', 'totalProblems', 'patternFrequencies', 'patternCounts', 'patternDifficulty'],
-        'user' => ['totalAttempted'],
+        'user' => ['totalAttempted', 'overallReadiness'],
         'patterns' => [
             'stack' => [
                 'companyCount', 'companyDifficulty', 'userCount', 'userWeighted', 'userOptimal',
