@@ -128,3 +128,20 @@ test('redirects to dashboard after login', function () {
 
     $response->assertRedirect('/dashboard');
 });
+
+test('links new social account to existing user with the same email', function () {
+    $existingUser = User::factory()->create(['email' => 'ada@example.com']);
+
+    fakeSocialite('github', fakeSocialiteUser('ada@example.com', 'github-456'));
+
+    $response = $this->get('/auth/github/callback');
+
+    $this->assertAuthenticatedAs($existingUser);
+    expect(User::count())->toBe(1);
+    $this->assertDatabaseHas('social_accounts', [
+        'user_id' => $existingUser->id,
+        'provider' => 'github',
+        'provider_user_id' => 'github-456',
+        'provider_email' => 'ada@example.com',
+    ]);
+});

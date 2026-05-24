@@ -32,11 +32,15 @@ class OAuthController extends Controller
             ->where('provider_user_id', $socialiteUser->getId())
             ->first();
 
-        $user = $socialAccount?->user ?? User::create([
-            'name' => $socialiteUser->getName() ?? $socialiteUser->getNickname() ?? $email,
-            'email' => $email,
-            'password' => null,
-        ]);
+        $user = $socialAccount?->user ?? User::where('email', $email)->first();
+
+        if ($user === null) {
+            $user = User::create([
+                'name' => $socialiteUser->getName() ?? $socialiteUser->getNickname() ?? $email,
+                'email' => $email,
+                'password' => null,
+            ]);
+        }
 
         if ($socialAccount === null) {
             $user->socialAccounts()->create([
