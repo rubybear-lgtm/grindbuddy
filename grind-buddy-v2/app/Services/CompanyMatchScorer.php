@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Log;
 use App\Models\Problem;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class CompanyMatchScorer
@@ -73,6 +74,16 @@ class CompanyMatchScorer
             $composite = (int) round(($coverage + $alignment) / 2);
             $mastery = $companyCount > 0 ? (int) round(($userOptimal / $companyCount) * 100) : 0;
 
+            $recency = 0;
+            if ($patternUserLogs->isNotEmpty()) {
+                $lastTimestamp = $patternUserLogs->max('timestamp');
+                if ($lastTimestamp !== null) {
+                    $daysSince = Carbon::parse($lastTimestamp)->diffInDays(now());
+                    // Full score within 30 days, linear decay to 0 at 365 days
+                    $recency = (int) max(0, round(100 * max(0, 1 - ($daysSince / 365))));
+                }
+            }
+
             $patterns[$pattern] = [
                 'companyCount' => $companyCount,
                 'companyDifficulty' => $companyDifficulty,
@@ -85,7 +96,7 @@ class CompanyMatchScorer
                 'composite' => $composite,
                 'mastery' => $mastery,
                 'gap' => max(0, 100 - $composite),
-                'recency' => $patternUserLogs->isNotEmpty() ? 100 : 0,
+                'recency' => $recency,
                 'level' => $this->resolveLevel($companyCount),
             ];
         }
