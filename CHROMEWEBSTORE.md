@@ -45,7 +45,19 @@ This document serves as the single source of truth for publishing and updating t
 
 ---
 
-## 2. Permissions Justifications
+## 2. Graphics & Assets
+
+The official high-end store listing graphics have been generated and copied into your extension folder:
+
+| Asset | Dimensions | Status | Local Workspace Filename |
+|-------|-----------|--------|--------------------------|
+| Store Icon [REQUIRED] | 128×128 PNG | ✅ Ready | `chrome-extension/assets/store_icon.png` |
+| Promo Tile [RECOMMENDED] | 440×280 PNG | ✅ Ready | `chrome-extension/assets/promo_tile.png` |
+| Marquee Banner [RECOMMENDED] | 1400×560 PNG | ✅ Ready | `chrome-extension/assets/marquee_banner.png` |
+
+---
+
+## 3. Permissions Justifications
 
 These justifications must be copied exactly into the Developer Console's permission explanation section to avoid instant review rejections:
 
