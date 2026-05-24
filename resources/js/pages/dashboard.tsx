@@ -101,13 +101,60 @@ export default function Dashboard({
     }, [reviewQueue, preferredPlatform]);
 
     const masteryStats = useMemo(() => {
+        const now = Date.parse(serverTime);
+        const oneDay = 1000 * 60 * 60 * 24;
+
+        // Compute streak: consecutive days with at least one log, ending at today
+        const logDays = new Set<number>();
+        _logs.forEach((log) => {
+            const d = new Date(log.timestamp);
+            logDays.add(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        });
+        const todayUtc = Date.UTC(
+            new Date(now).getFullYear(),
+            new Date(now).getMonth(),
+            new Date(now).getDate(),
+        );
+        let streak = 0;
+        for (let i = 0; ; i++) {
+            const day = todayUtc - i * oneDay;
+            if (logDays.has(day)) {
+                streak++;
+            } else if (i > 0) {
+                break;
+            } else {
+                break;
+            }
+        }
+
+        // Compute mastered: unique patterns from "good" logs (Optimal, Suboptimal)
+        const solvedPatterns = new Set<string>();
+        const seenProblemIds = new Set<string>();
+        _logs
+            .filter((l) => l.status === 'Optimal' || l.status === 'Suboptimal')
+            .forEach((l) => {
+                if (!seenProblemIds.has(l.problem_id)) {
+                    seenProblemIds.add(l.problem_id);
+                    const problem = _problems.find((p) => p.id === l.problem_id);
+                    if (problem?.patterns) {
+                        problem.patterns.forEach((pt: string) => solvedPatterns.add(pt));
+                    }
+                }
+            });
+
+        // Compute retention: ratio of "good" logs to total
+        const totalLogs = _logs.length;
+        const goodLogs = _logs.filter(
+            (l) => l.status === 'Optimal' || l.status === 'Suboptimal',
+        ).length;
+
         return {
-            streak: 12,
-            mastered: 45,
+            streak,
+            mastered: solvedPatterns.size,
             today: reviewQueue.length,
-            recallStability: 84,
+            recallStability: totalLogs > 0 ? Math.round((goodLogs / totalLogs) * 100) : 0,
         };
-    }, [reviewQueue]);
+    }, [reviewQueue, _logs, _problems, serverTime]);
 
     return (
         <>
@@ -201,16 +248,17 @@ export default function Dashboard({
                                 <div className="flex flex-wrap gap-4 pt-4">
                                     <Button
                                         size="lg"
-                                        className="h-14 !rounded-md bg-primary px-10 text-base !font-black tracking-widest text-primary-foreground shadow-[0_0_50px_oklch(var(--primary)/0.3)] transition-all hover:scale-105 disabled:opacity-40"
-                                        disabled={reviewQueue.length === 0}
+                                        className="h-14 !rounded-md bg-primary px-10 text-base !font-black tracking-widest text-primary-foreground shadow-[0_0_50px_oklch(var(--primary)/0.3)] transition-all hover:scale-105"
                                         onClick={() =>
-                                            document
-                                                .getElementById('review-queue')
-                                                ?.scrollIntoView({ behavior: 'smooth' })
+                                            reviewQueue.length > 0
+                                                ? document
+                                                      .getElementById('review-queue')
+                                                      ?.scrollIntoView({ behavior: 'smooth' })
+                                                : openLog()
                                         }
                                     >
                                         <Play className="mr-3 h-5 w-5 fill-current" />
-                                        Start review
+                                        {reviewQueue.length > 0 ? 'Start review' : 'Log your first problem'}
                                     </Button>
                                     {firstDuePracticeUrl && (
                                         <a
