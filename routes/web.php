@@ -40,9 +40,7 @@ Route::inertia('/login', 'auth/login')->name('login');
 
 Route::match(['post'], '/login', fn () => abort(404));
 
-if (app()->isLocal()) {
-    Route::get('/dev-login', DevLoginController::class)->name('dev-login');
-}
+Route::get('/dev-login', DevLoginController::class)->name('dev-login');
 
 Route::get('/auth/{provider}', [OAuthController::class, 'redirect'])
     ->name('oauth.redirect')
