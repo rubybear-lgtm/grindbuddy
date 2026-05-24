@@ -1,34 +1,29 @@
-# Nix
-.result
-.direnv
-
-# Environment
-.env
-.env.local
-
-# Node
-node_modules/
-.svelte-kit/
-
-# Build
-build/
-dist/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
+/.phpunit.cache
+/bootstrap/ssr
+/node_modules
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/resources/js/actions
+/resources/js/routes
+/resources/js/wayfinder
+/vendor
 .DS_Store
-Thumbs.db
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Misc
-.cache/
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/auth.json
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed

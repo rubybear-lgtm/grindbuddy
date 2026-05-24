@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Grind Buddy Logger",
+  "description": "Log LeetCode and NeetCode problems from a compact Chrome extension popup.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "Grind Buddy Logger",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://leetcode.com/*",
+        "https://www.leetcode.com/*",
+        "https://neetcode.io/*"
+      ],
+      "js": ["src/content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*"
+  ]
+}

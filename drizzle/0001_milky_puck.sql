@@ -1,1 +1,0 @@
-ALTER TABLE "problems" ADD COLUMN "neetcode_url" text;

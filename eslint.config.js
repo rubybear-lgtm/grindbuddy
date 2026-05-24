@@ -1,41 +1,135 @@
-import prettier from 'eslint-config-prettier';
-import { fileURLToPath } from 'node:url';
-import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
-import svelte from 'eslint-plugin-svelte';
-import { defineConfig } from 'eslint/config';
+import stylistic from '@stylistic/eslint-plugin';
+import prettier from 'eslint-config-prettier/flat';
+import importPlugin from 'eslint-plugin-import';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
-import ts from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import typescript from 'typescript-eslint';
 
-const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
+const controlStatements = [
+    'if',
+    'return',
+    'for',
+    'while',
+    'do',
+    'switch',
+    'try',
+    'throw',
+];
+const paddingAroundControl = [
+    ...controlStatements.flatMap((stmt) => [
+        { blankLine: 'always', prev: '*', next: stmt },
+        { blankLine: 'always', prev: stmt, next: '*' },
+    ]),
+];
 
-export default defineConfig(
-	includeIgnoreFile(gitignorePath),
-	js.configs.recommended,
-	...ts.configs.recommended,
-	...svelte.configs.recommended,
-	prettier,
-	...svelte.configs.prettier,
-	{
-		languageOptions: {
-			globals: { ...globals.browser, ...globals.node }
-		},
-		rules: {
-			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
-			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
-			'no-undef': 'off'
-		}
-	},
-	{
-		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
-		languageOptions: {
-			parserOptions: {
-				projectService: true,
-				extraFileExtensions: ['.svelte'],
-				parser: ts.parser,
-				svelteConfig
-			}
-		}
-	}
-);
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+    js.configs.recommended,
+    reactHooks.configs.flat['recommended-latest'],
+    ...typescript.configs.recommended,
+    {
+        ...react.configs.flat.recommended,
+        ...react.configs.flat['jsx-runtime'], // Required for React 17+
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                chrome: 'readonly',
+                __GRIND_BUDDY_ORIGIN__: 'readonly',
+            },
+        },
+        rules: {
+            'react/react-in-jsx-scope': 'off',
+            'react/prop-types': 'off',
+            'react/no-unescaped-entities': 'off',
+        },
+        settings: {
+            react: {
+                version: 'detect',
+            },
+        },
+    },
+    {
+        plugins: {
+            import: importPlugin,
+        },
+        settings: {
+            'import/resolver': {
+                typescript: {
+                    alwaysTryTypes: true,
+                    project: './tsconfig.json',
+                },
+                node: true,
+            },
+        },
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/consistent-type-imports': [
+                'error',
+                {
+                    prefer: 'type-imports',
+                    fixStyle: 'separate-type-imports',
+                },
+            ],
+            'import/order': [
+                'error',
+                {
+                    groups: [
+                        'builtin',
+                        'external',
+                        'internal',
+                        'parent',
+                        'sibling',
+                        'index',
+                    ],
+                    alphabetize: {
+                        order: 'asc',
+                        caseInsensitive: true,
+                    },
+                },
+            ],
+            'import/consistent-type-specifier-style': [
+                'error',
+                'prefer-top-level',
+            ],
+        },
+    },
+    {
+        plugins: {
+            '@stylistic': stylistic,
+        },
+        rules: {
+            '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
+            '@stylistic/padding-line-between-statements': [
+                'error',
+                ...paddingAroundControl,
+            ],
+        },
+    },
+    {
+        ignores: [
+            'vendor',
+            'node_modules',
+            'public',
+            'chrome-extension/dist',
+            'bootstrap/ssr',
+            'tailwind.config.js',
+            'vite.config.ts',
+            'resources/js/actions/**',
+            'resources/js/components/ui/*',
+            'resources/js/routes/**',
+            'resources/js/wayfinder/**',
+        ],
+    },
+    prettier, // Turn off all rules that might conflict with Prettier
+    {
+        plugins: {
+            '@stylistic': stylistic,
+        },
+        rules: {
+            curly: ['error', 'all'],
+            '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
+        },
+    },
+];

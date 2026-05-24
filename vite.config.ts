@@ -1,31 +1,31 @@
-/// <reference types="vitest" />
-import devtoolsJson from 'vite-plugin-devtools-json';
+import inertia from '@inertiajs/vite';
+import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
+import laravel from 'laravel-vite-plugin';
+import { bunny } from 'laravel-vite-plugin/fonts';
+import { defineConfig } from 'vite';
 
-export default defineConfig(({ mode }) => {
-	const env = loadEnv(mode, process.cwd(), '');
-	process.env = { ...process.env, ...env };
-
-	return {
-		plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
-		server: {
-			host: true,
-			port: Number(process.env.PORT) || 5173
-		},
-		preview: {
-			host: true,
-			port: Number(process.env.PORT) || 5173
-		},
-		test: {
-			environment: 'jsdom',
-			setupFiles: ['./src/test-setup.ts'],
-			coverage: {
-				provider: 'v8',
-				reporter: ['text', 'json', 'html'],
-				exclude: ['node_modules/', 'src/test-setup.ts']
-			}
-		}
-	};
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.tsx'],
+            refresh: true,
+            fonts: [
+                bunny('Instrument Sans', {
+                    weights: [400, 500, 600],
+                }),
+            ],
+        }),
+        inertia(),
+        react({
+            babel: {
+                plugins: ['babel-plugin-react-compiler'],
+            },
+        }),
+        tailwindcss(),
+        wayfinder({
+            formVariants: true,
+        }),
+    ],
 });
