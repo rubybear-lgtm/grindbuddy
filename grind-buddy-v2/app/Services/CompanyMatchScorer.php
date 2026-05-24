@@ -185,6 +185,107 @@ class CompanyMatchScorer
         return (int) round($weightedSum / $totalProblems);
     }
 
+    /**
+     * @param  array<int, Problem>  $problems
+     * @param  Collection<int, Log>  $userLogs
+     * @param  array<string, array{gap: int, recency: int}>  $patternMetrics
+     * @param  array<string, int>  $patternPercentages
+     * @return array<int, array{
+     *     problemId: string,
+     *     title: string,
+     *     difficulty: string,
+     *     pattern: string,
+     *     status: string,
+     *     reason: string,
+     *     leetcodeUrl: string|null,
+     *     neetcodeUrl: string|null,
+     *     priority: float,
+     * }>
+     */
+    public function recommendProblems(
+        array $problems,
+        Collection $userLogs,
+        array $patternMetrics,
+        array $patternPercentages,
+        string $companyName = '',
+        int $limit = 5
+    ): array {
+        $latestLogByProblem = $userLogs
+            ->sortByDesc('timestamp')
+            ->unique('problem_id')
+            ->keyBy('problem_id');
+
+        $difficultyWeight = static fn (string $difficulty): float => match ($difficulty) {
+            'Hard' => 3.0,
+            'Medium' => 2.0,
+            default => 1.0,
+        };
+
+        $recommendations = [];
+
+        foreach ($problems as $problem) {
+            $primaryPattern = $problem->patterns[0] ?? null;
+
+            if ($primaryPattern === null || ! isset($patternMetrics[$primaryPattern])) {
+                continue;
+            }
+
+            $metrics = $patternMetrics[$primaryPattern];
+            $gap = $metrics['gap'];
+            $recency = $metrics['recency'];
+            $emphasis = $patternPercentages[$primaryPattern] ?? 0;
+
+            /** @var Log|null $log */
+            $log = $latestLogByProblem->get($problem->id);
+
+            if ($log === null) {
+                $status = 'unsolved';
+                $recencyMultiplier = 1.0;
+            } elseif ($log->status === 'Suboptimal') {
+                $status = 'suboptimal';
+                $recencyMultiplier = 1.0 + (1.0 - $recency / 100);
+            } elseif ($log->status === 'Optimal' && $recency < 50) {
+                $status = 'stale';
+                $recencyMultiplier = 1.0 + (1.0 - $recency / 100);
+            } else {
+                continue;
+            }
+
+            $priority = $gap * ($emphasis / 100) * $difficultyWeight($problem->difficulty) * $recencyMultiplier;
+
+            $gapDescriptor = match (true) {
+                $gap >= 60 => 'High-gap pattern',
+                $gap >= 30 => 'Partial gap',
+                default => 'Refresh needed',
+            };
+            $companyLabel = $companyName !== '' ? " of {$companyName} interviews" : ' of interviews';
+            $reason = "{$gapDescriptor} — {$emphasis}%{$companyLabel}";
+
+            $recommendations[] = [
+                'problemId' => $problem->id,
+                'title' => $problem->title,
+                'difficulty' => $problem->difficulty,
+                'pattern' => $primaryPattern,
+                'status' => $status,
+                'reason' => $reason,
+                'leetcodeUrl' => $problem->leetcode_url,
+                'neetcodeUrl' => $problem->neetcode_url,
+                'priority' => $priority,
+            ];
+        }
+
+        usort($recommendations, static function (array $a, array $b) use ($difficultyWeight): int {
+            $byPriority = $b['priority'] <=> $a['priority'];
+            if ($byPriority !== 0) {
+                return $byPriority;
+            }
+
+            return $difficultyWeight($b['difficulty']) <=> $difficultyWeight($a['difficulty']);
+        });
+
+        return array_slice($recommendations, 0, $limit);
+    }
+
     public function resolveUserLevel(int $composite): string
     {
         return match (true) {
