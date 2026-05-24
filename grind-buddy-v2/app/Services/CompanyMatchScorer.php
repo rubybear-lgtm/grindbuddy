@@ -33,6 +33,12 @@ class CompanyMatchScorer
         $summary = $this->summarizeCompanyPatterns($problems);
         $patterns = [];
 
+        $difficultyWeight = static fn (Problem $problem): float => match ($problem->difficulty) {
+            'Hard' => 3.0,
+            'Medium' => 2.0,
+            default => 1.0,
+        };
+
         foreach ($summary['patternCounts'] as $pattern => $companyCount) {
             $patternProblems = [];
 
@@ -52,12 +58,6 @@ class CompanyMatchScorer
 
             $userCount = $patternUserLogs->count();
             $userOptimal = $patternUserLogs->where('status', 'Optimal')->count();
-
-            $difficultyWeight = static fn (Problem $problem): float => match ($problem->difficulty) {
-                'Hard' => 3.0,
-                'Medium' => 2.0,
-                default => 1.0,
-            };
 
             $companyWeight = (float) array_sum(array_map($difficultyWeight, array_values($patternProblems)));
 
